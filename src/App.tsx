@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckSquare, Trash2, Copy, Sword, XCircle, Info } from 'lucide-react';
+import { CheckSquare, Trash2, Copy, Sword, XCircle, Info, Minus, X } from 'lucide-react';
 
 interface Quest {
   id: string;
@@ -66,6 +66,32 @@ export default function App() {
   const [copiedQuestId, setCopiedQuestId] = useState<string | null>(null);
   const [showCredits, setShowCredits] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [isClosed, setIsClosed] = useState(false);
+
+  const handleCloseApp = () => {
+    setIsExiting(true);
+    // Allow the 450ms exit CSS animation to run before invoking Tauri's window closing API
+    setTimeout(() => {
+      const tauriWindow = (window as any).__TAURI__?.window?.getCurrentWindow();
+      if (tauriWindow) {
+        tauriWindow.close();
+      } else {
+        // Fallback for visual experience inside browser / iframe preview
+        setIsClosed(true);
+      }
+    }, 450);
+  };
+
+  const handleMinimizeApp = () => {
+    const tauriWindow = (window as any).__TAURI__?.window?.getCurrentWindow();
+    if (tauriWindow) {
+      tauriWindow.minimize();
+    } else {
+      setIsMinimized(true);
+    }
+  };
   
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -202,30 +228,77 @@ export default function App() {
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center font-sans selection:bg-[#d4af37]/30 p-2 sm:p-6 overflow-hidden">
       
-      <div 
-        className="w-full max-w-2xl flex flex-col items-center h-full max-h-[85vh] justify-center min-h-0"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-        onContextMenu={handleContextMenu}
-      >
-        {/* Decorative Top Frame */}
-        <div className="w-full flex items-center justify-center mb-3 sm:mb-5 opacity-80 pointer-events-none select-none flex-shrink-0">
-          <div className="h-px bg-gradient-to-r from-transparent to-[#d4af37] w-1/4"></div>
-          <div className="w-3 h-3 border border-[#d4af37] rotate-45 mx-4"></div>
-          <div className="h-px bg-gradient-to-l from-transparent to-[#d4af37] w-1/4"></div>
-        </div>
+      {isClosed ? (
+        <button 
+          onClick={() => {
+            setIsExiting(false);
+            setIsClosed(false);
+          }}
+          className="border border-[#444] hover:border-[#d4af37] bg-black/80 p-8 cursor-pointer relative flex flex-col items-center gap-4 transition-all skyrim-entrance"
+        >
+          <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-[#d4af37] opacity-60"></div>
+          <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-[#d4af37] opacity-60"></div>
+          <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-[#d4af37] opacity-60"></div>
+          <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-[#d4af37] opacity-60"></div>
+          <span className="font-display tracking-widest text-[#ececec] text-lg uppercase">The Scrolls Have Closed</span>
+          <span className="font-serif italic text-xs text-[#d4af37] hover:underline">Click to unroll the runes again.</span>
+        </button>
+      ) : isMinimized ? (
+        <button 
+          onClick={() => setIsMinimized(false)}
+          className="border border-[#d4af37] bg-black/80 hover:bg-[#d4af37]/10 p-6 md:p-8 cursor-pointer relative flex flex-col items-center gap-4 transition-all skyrim-entrance"
+        >
+          <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-[#d4af37] opacity-60"></div>
+          <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-[#d4af37] opacity-60"></div>
+          <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-[#d4af37] opacity-60"></div>
+          <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-[#d4af37] opacity-60"></div>
+          <Sword className="text-[#d4af37] animate-pulse" size={32} />
+          <span className="font-display tracking-widest text-[#d4af37] text-lg uppercase">Quest Log Minimized</span>
+          <span className="font-serif italic text-xs text-[#a1a1aa]">Click here to restore objectives.</span>
+        </button>
+      ) : (
+        <div 
+          className={`w-full max-w-2xl flex flex-col items-center h-full max-h-[85vh] justify-center min-h-0 skyrim-entrance ${isExiting ? 'fade-out-exit' : ''}`}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          onPointerLeave={handlePointerUp}
+          onContextMenu={handleContextMenu}
+        >
+          {/* Decorative Top Frame */}
+          <div className="w-full flex items-center justify-center mb-3 sm:mb-5 opacity-80 pointer-events-none select-none flex-shrink-0">
+            <div className="h-px bg-gradient-to-r from-transparent to-[#d4af37] w-1/4"></div>
+            <div className="w-3 h-3 border border-[#d4af37] rotate-45 mx-4"></div>
+            <div className="h-px bg-gradient-to-l from-transparent to-[#d4af37] w-1/4"></div>
+          </div>
 
-        <div className="w-full bg-black/40 backdrop-blur-md border border-[#ffffff15] shadow-2xl p-4 sm:p-6 md:p-8 relative flex flex-col flex-1 min-h-0">
-          {/* Corner Accents */}
-          <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-[#d4af37] opacity-50"></div>
-          <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-[#d4af37] opacity-50"></div>
-          <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-[#d4af37] opacity-50"></div>
-          <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-[#d4af37] opacity-50"></div>
+          <div className="w-full bg-black/40 backdrop-blur-md border border-[#ffffff15] shadow-2xl p-4 sm:p-6 md:p-8 relative flex flex-col flex-1 min-h-0">
+            {/* Custom Skyrim Window Controls */}
+            <div className="absolute top-3 right-3 flex items-center gap-2 z-20">
+              <button
+                onClick={handleMinimizeApp}
+                title="Minimize Application"
+                className="w-6 h-6 flex items-center justify-center border border-[#d4af37]/35 bg-black/60 hover:bg-[#d4af37]/20 text-[#d4af37] cursor-pointer transition-colors"
+              >
+                <Minus size={11} strokeWidth={3} />
+              </button>
+              <button
+                onClick={handleCloseApp}
+                title="Exit Quest Log"
+                className="w-6 h-6 flex items-center justify-center border border-[#d4af37]/35 bg-black/60 hover:bg-red-950/40 hover:border-red-500/60 hover:text-red-400 text-[#d4af37] cursor-pointer transition-colors"
+              >
+                <X size={11} strokeWidth={3} />
+              </button>
+            </div>
 
-          <header className="mb-4 sm:mb-5 flex flex-col md:flex-row md:items-end justify-between gap-4 flex-shrink-0">
+            {/* Corner Accents */}
+            <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-[#d4af37] opacity-50"></div>
+            <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-[#d4af37] opacity-50"></div>
+            <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-[#d4af37] opacity-50"></div>
+            <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-[#d4af37] opacity-50"></div>
+
+            <header className="mb-4 sm:mb-5 flex flex-col md:flex-row md:items-end justify-between gap-4 flex-shrink-0">
             <div 
               className="flex items-center gap-4 cursor-pointer group w-fit"
               onClick={() => setShowCredits(true)}
@@ -240,6 +313,29 @@ export default function App() {
                 </p>
               </div>
             </div>
+
+            {/* Quick Export Runes Button */}
+            <button
+              onClick={handleCopy}
+              disabled={quests.length === 0}
+              className={`font-display text-xs tracking-widest uppercase py-2 px-4 border transition-all duration-300 relative group flex items-center justify-center gap-2 overflow-hidden max-md:w-full ${
+                quests.length === 0
+                  ? 'border-[#444]/40 text-[#666] opacity-40 cursor-not-allowed'
+                  : copied
+                    ? 'border-[#ececec] bg-[#ececec]/10 text-[#ececec] cursor-default'
+                    : 'border-[#d4af37]/45 hover:border-[#d4af37] bg-[#d4af37]/5 hover:bg-[#d4af37]/10 text-[#d4af37] cursor-pointer'
+              }`}
+            >
+              <span className={`transition-transform duration-200 ${copied ? 'scale-95 font-medium' : ''}`}>
+                {copied ? 'Runes Scribed' : 'Export Runes'}
+              </span>
+              {/* Subtle shining light effects on hover */}
+              {quests.length > 0 && !copied && (
+                <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
+                  <div className="w-[150%] h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out" />
+                </div>
+              )}
+            </button>
           </header>
 
           <Divider />
@@ -336,6 +432,7 @@ export default function App() {
           <div className="h-px bg-gradient-to-l from-transparent to-[#d4af37] w-1/4"></div>
         </div>
       </div>
+      )}
 
       {/* Master Menu Overlay */}
       <AnimatePresence>
