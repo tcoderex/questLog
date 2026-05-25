@@ -103,4 +103,19 @@ body {
   animation: goldPulse 2s infinite ease-in-out;
 }
 
+/* Frameless desktop window dragging configurations (Electron/Tauri) */
+.titlebar-drag {
+  -webkit-app-region: drag;
+}
+
+.titlebar-nodrag,
+.titlebar-nodrag button,
+.titlebar-nodrag input,
+.titlebar-nodrag a,
+.titlebar-nodrag svg,
+.titlebar-nodrag [role="button"] {
+  -webkit-app-region: no-drag;
+}
+
+
 

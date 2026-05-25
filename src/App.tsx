@@ -150,11 +150,15 @@ export default function App() {
 
   const handleCloseApp = () => {
     setIsExiting(true);
-    // Allow the 450ms exit CSS animation to run before invoking Tauri's window closing API
+    // Allow the 450ms exit CSS animation to run before invoking the closing APIs
     setTimeout(() => {
       const tauriWindow = (window as any).__TAURI__?.window?.getCurrentWindow();
+      const electron = (window as any).require?.('electron');
+      
       if (tauriWindow) {
         tauriWindow.close();
+      } else if (electron) {
+        electron.ipcRenderer.send('window-close');
       } else {
         // Fallback for visual experience inside browser / iframe preview
         setIsClosed(true);
@@ -164,8 +168,12 @@ export default function App() {
 
   const handleMinimizeApp = () => {
     const tauriWindow = (window as any).__TAURI__?.window?.getCurrentWindow();
+    const electron = (window as any).require?.('electron');
+    
     if (tauriWindow) {
       tauriWindow.minimize();
+    } else if (electron) {
+      electron.ipcRenderer.send('window-minimize');
     } else {
       setIsMinimized(true);
     }
@@ -352,8 +360,15 @@ export default function App() {
           </div>
 
           <div className="w-full bg-black/40 backdrop-blur-md border border-[#ffffff15] shadow-2xl p-4 sm:p-6 md:p-8 relative flex flex-col flex-1 min-h-0">
+            {/* Elegant Native Drag Handle Area for Frameless Mode (Electron/Tauri) */}
+            <div className="absolute top-0 left-0 right-24 h-12 z-10 titlebar-drag cursor-grab active:cursor-grabbing flex items-center pl-4 select-none">
+              <span className="text-[10px] font-display text-[#d4af37]/35 tracking-[0.25em] uppercase select-none pointer-events-none">
+                Tamriel Chronicle
+              </span>
+            </div>
+
             {/* Custom Skyrim Window Controls */}
-            <div className="absolute top-3 right-3 flex items-center gap-2 z-20">
+            <div className="absolute top-3 right-3 flex items-center gap-2 z-20 titlebar-nodrag">
               <button
                 onClick={handleMinimizeApp}
                 title="Minimize Application"
@@ -376,7 +391,7 @@ export default function App() {
             <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-[#d4af37] opacity-50"></div>
             <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-[#d4af37] opacity-50"></div>
 
-            <header className="mb-4 sm:mb-5 flex flex-col md:flex-row md:items-end justify-between gap-4 flex-shrink-0">
+            <header className="mb-4 sm:mb-5 flex flex-col md:flex-row md:items-end justify-between gap-4 flex-shrink-0 relative z-20 titlebar-nodrag">
             <div 
               className="flex items-center gap-4 cursor-pointer group w-fit"
               onClick={() => setShowCredits(true)}
