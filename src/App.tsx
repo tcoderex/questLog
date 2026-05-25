@@ -190,10 +190,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 md:p-12 flex flex-col items-center justify-start font-sans selection:bg-[#d4af37]/30">
+    <div className="h-screen w-full flex flex-col items-center justify-center font-sans selection:bg-[#d4af37]/30 p-2 sm:p-6 overflow-hidden">
       
       <div 
-        className="w-full max-w-2xl flex flex-col items-center"
+        className="w-full max-w-2xl flex flex-col items-center h-full max-h-[85vh] justify-center min-h-0"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -202,20 +202,20 @@ export default function App() {
         onContextMenu={handleContextMenu}
       >
         {/* Decorative Top Frame */}
-        <div className="w-full flex items-center justify-center mb-5 opacity-80 pointer-events-none select-none">
+        <div className="w-full flex items-center justify-center mb-3 sm:mb-5 opacity-80 pointer-events-none select-none flex-shrink-0">
           <div className="h-px bg-gradient-to-r from-transparent to-[#d4af37] w-1/4"></div>
           <div className="w-3 h-3 border border-[#d4af37] rotate-45 mx-4"></div>
           <div className="h-px bg-gradient-to-l from-transparent to-[#d4af37] w-1/4"></div>
         </div>
 
-        <div className="w-full bg-black/40 backdrop-blur-md border border-[#ffffff15] shadow-2xl p-5 md:p-8 relative">
+        <div className="w-full bg-black/40 backdrop-blur-md border border-[#ffffff15] shadow-2xl p-4 sm:p-6 md:p-8 relative flex flex-col flex-1 min-h-0">
           {/* Corner Accents */}
           <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-[#d4af37] opacity-50"></div>
           <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-[#d4af37] opacity-50"></div>
           <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-[#d4af37] opacity-50"></div>
           <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-[#d4af37] opacity-50"></div>
 
-          <header className="mb-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <header className="mb-4 sm:mb-5 flex flex-col md:flex-row md:items-end justify-between gap-4 flex-shrink-0">
             <div 
               className="flex items-center gap-4 cursor-pointer group w-fit"
               onClick={() => setShowCredits(true)}
@@ -235,7 +235,7 @@ export default function App() {
           <Divider />
 
           {/* Quest Input */}
-          <div className="relative group my-5">
+          <div className="relative group my-3 sm:my-5 flex-shrink-0">
             <div className="absolute left-0 top-1/2 -translate-y-1/2 opacity-50 group-focus-within:opacity-100 transition-opacity px-4 pointer-events-none">
               <span className="font-display text-[#d4af37] text-lg">»</span>
             </div>
@@ -251,7 +251,7 @@ export default function App() {
           </div>
 
           {/* Quest List */}
-          <div ref={scrollRef} className="flex flex-col gap-1 min-h-[40vh] max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+          <div ref={scrollRef} className="flex flex-col gap-1 flex-1 overflow-y-auto pr-2 custom-scrollbar min-h-0">
             {quests.length === 0 ? (
               <div className="h-full mt-10 flex flex-col items-center justify-center text-[#555] font-display uppercase tracking-widest space-y-4 text-sm">
                 <p>No Active Objectives</p>
@@ -298,7 +298,7 @@ export default function App() {
           </div>
           
           {/* Hint for master menu */}
-          <div className="mt-6 pt-5 border-t border-[#ffffff10] text-center select-none pointer-events-none">
+          <div className="mt-4 pt-4 sm:mt-5 sm:pt-5 border-t border-[#ffffff10] text-center select-none pointer-events-none flex-shrink-0">
             <p className="font-display text-[10px] tracking-widest uppercase text-[#555]">
               Hold touch or Right-click here for System Menu
             </p>
@@ -307,7 +307,7 @@ export default function App() {
         </div>
         
         {/* Decorative Bottom Frame */}
-        <div className="w-full flex items-center justify-center mt-5 opacity-80 pointer-events-none select-none">
+        <div className="w-full flex items-center justify-center mt-3 sm:mt-5 opacity-80 pointer-events-none select-none flex-shrink-0">
           <div className="h-px bg-gradient-to-r from-transparent to-[#d4af37] w-1/4"></div>
           <div className="w-3 h-3 border border-[#d4af37] rotate-45 mx-4"></div>
           <div className="h-px bg-gradient-to-l from-transparent to-[#d4af37] w-1/4"></div>
