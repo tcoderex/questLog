@@ -190,126 +190,128 @@ export default function App() {
   };
 
   return (
-    <div 
-      className="min-h-screen p-4 sm:p-6 md:p-12 flex flex-col items-center justify-start font-sans selection:bg-[#d4af37]/30"
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
-      onPointerLeave={handlePointerUp}
-      onContextMenu={handleContextMenu}
-    >
+    <div className="min-h-screen p-4 sm:p-6 md:p-12 flex flex-col items-center justify-start font-sans selection:bg-[#d4af37]/30">
       
-      {/* Decorative Top Frame */}
-      <div className="w-full max-w-3xl flex items-center justify-center mb-6 opacity-80">
-        <div className="h-px bg-gradient-to-r from-transparent to-[#d4af37] w-1/4"></div>
-        <div className="w-3 h-3 border border-[#d4af37] rotate-45 mx-4"></div>
-        <div className="h-px bg-gradient-to-l from-transparent to-[#d4af37] w-1/4"></div>
-      </div>
-
-      <div className="w-full max-w-3xl bg-black/40 backdrop-blur-md border border-[#ffffff15] shadow-2xl p-6 md:p-10 relative">
-        {/* Corner Accents */}
-        <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-[#d4af37] opacity-50"></div>
-        <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-[#d4af37] opacity-50"></div>
-        <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-[#d4af37] opacity-50"></div>
-        <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-[#d4af37] opacity-50"></div>
-
-        <header className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div 
-            className="flex items-center gap-4 cursor-pointer group w-fit"
-            onClick={() => setShowCredits(true)}
-          >
-            <Sword size={36} className="text-[#d4af37] opacity-70 group-hover:opacity-100 transition-opacity" />
-            <div>
-              <h1 className="font-display text-4xl md:text-5xl tracking-widest text-[#ececec] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:text-[#d4af37] transition-colors">
-                Quest Log
-              </h1>
-              <p className="text-[#a1a1aa] font-serif italic mt-2 text-lg">
-                Scribe your objectives, then export the runes.
-              </p>
-            </div>
-          </div>
-        </header>
-
-        <Divider />
-
-        {/* Quest Input */}
-        <div className="relative group my-6">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 opacity-50 group-focus-within:opacity-100 transition-opacity px-4 pointer-events-none">
-            <span className="font-display text-[#d4af37] text-xl">»</span>
-          </div>
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="What befell you? (Press Enter to add)..."
-            className="w-full bg-black/60 border border-transparent border-b-[#404040] focus:border-b-[#d4af37] outline-none pl-10 md:pl-12 pr-4 py-3 md:py-4 text-lg md:text-xl text-[#ececec] placeholder-[#666] transition-colors focus:bg-black/80 font-serif italic focus:not-italic"
-          />
+      <div 
+        className="w-full max-w-2xl flex flex-col items-center"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+        onContextMenu={handleContextMenu}
+      >
+        {/* Decorative Top Frame */}
+        <div className="w-full flex items-center justify-center mb-5 opacity-80 pointer-events-none select-none">
+          <div className="h-px bg-gradient-to-r from-transparent to-[#d4af37] w-1/4"></div>
+          <div className="w-3 h-3 border border-[#d4af37] rotate-45 mx-4"></div>
+          <div className="h-px bg-gradient-to-l from-transparent to-[#d4af37] w-1/4"></div>
         </div>
 
-        {/* Quest List */}
-        <div ref={scrollRef} className="flex flex-col gap-1 min-h-[40vh] max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
-          {quests.length === 0 ? (
-            <div className="h-full mt-12 flex flex-col items-center justify-center text-[#555] font-display uppercase tracking-widest space-y-4">
-              <p>No Active Objectives</p>
+        <div className="w-full bg-black/40 backdrop-blur-md border border-[#ffffff15] shadow-2xl p-5 md:p-8 relative">
+          {/* Corner Accents */}
+          <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-[#d4af37] opacity-50"></div>
+          <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-[#d4af37] opacity-50"></div>
+          <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-[#d4af37] opacity-50"></div>
+          <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-[#d4af37] opacity-50"></div>
+
+          <header className="mb-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div 
+              className="flex items-center gap-4 cursor-pointer group w-fit"
+              onClick={() => setShowCredits(true)}
+            >
+              <Sword size={28} className="text-[#d4af37] opacity-70 group-hover:opacity-100 transition-opacity" />
+              <div>
+                <h1 className="font-display text-3xl md:text-4xl tracking-widest text-[#ececec] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:text-[#d4af37] transition-colors">
+                  Quest Log
+                </h1>
+                <p className="text-[#a1a1aa] font-serif italic mt-1 text-base">
+                  Scribe your objectives, then export the runes.
+                </p>
+              </div>
             </div>
-          ) : (
-            <AnimatePresence initial={false}>
-              {quests.map((quest) => (
-                <motion.div
-                  layout
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  key={quest.id}
-                  onClick={() => toggleQuest(quest.id)}
-                  className={`group relative flex flex-row items-start gap-4 p-4 cursor-pointer transition-colors border border-transparent hover:border-[#ffffff10] hover:bg-white/5 ${
-                    quest.completed ? 'opacity-60' : 'opacity-100'
-                  }`}
-                >
-                  <QuestMarker completed={quest.completed} />
-                  
-                  <span
-                    className={`flex-1 text-xl leading-relaxed transition-all ${
-                      quest.completed ? 'text-[#8a8a8a] line-through decoration-black/50' : 'text-[#ececec]'
+          </header>
+
+          <Divider />
+
+          {/* Quest Input */}
+          <div className="relative group my-5">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 opacity-50 group-focus-within:opacity-100 transition-opacity px-4 pointer-events-none">
+              <span className="font-display text-[#d4af37] text-lg">»</span>
+            </div>
+            <input
+              ref={inputRef}
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="What befell you? (Press Enter to add)..."
+              className="w-full bg-black/60 border border-transparent border-b-[#404040] focus:border-b-[#d4af37] outline-none pl-10 pr-4 py-3 text-base md:text-lg text-[#ececec] placeholder-[#666] transition-colors focus:bg-black/80 font-serif italic focus:not-italic"
+            />
+          </div>
+
+          {/* Quest List */}
+          <div ref={scrollRef} className="flex flex-col gap-1 min-h-[40vh] max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+            {quests.length === 0 ? (
+              <div className="h-full mt-10 flex flex-col items-center justify-center text-[#555] font-display uppercase tracking-widest space-y-4 text-sm">
+                <p>No Active Objectives</p>
+              </div>
+            ) : (
+              <AnimatePresence initial={false}>
+                {quests.map((quest) => (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    key={quest.id}
+                    onClick={() => toggleQuest(quest.id)}
+                    className={`group relative flex flex-row items-start gap-3 md:gap-4 p-3 md:p-4 cursor-pointer transition-colors border border-transparent hover:border-[#ffffff10] hover:bg-white/5 ${
+                      quest.completed ? 'opacity-60' : 'opacity-100'
                     }`}
                   >
-                    {quest.text}
-                  </span>
+                    <QuestMarker completed={quest.completed} />
+                    
+                    <span
+                      className={`flex-1 text-base md:text-lg leading-relaxed transition-all ${
+                        quest.completed ? 'text-[#8a8a8a] line-through decoration-black/50' : 'text-[#ececec]'
+                      }`}
+                    >
+                      {quest.text}
+                    </span>
 
-                  <button
-                    onClick={(e) => removeQuest(quest.id, e)}
-                    className="opacity-40 hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 text-[#666] hover:text-red-400 font-display text-xs md:text-sm px-2 py-1 tracking-widest transition-opacity"
-                  >
-                    Drop
-                  </button>
-                  
-                  {/* Active Indicator on hover */}
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-1 h-8 bg-gradient-to-b from-transparent via-[#d4af37] to-transparent"></div>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          )}
+                    <button
+                      onClick={(e) => removeQuest(quest.id, e)}
+                      className="opacity-40 hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 text-[#666] hover:text-red-400 font-display text-[10px] md:text-xs px-2 py-1 tracking-widest transition-opacity"
+                    >
+                      Drop
+                    </button>
+                    
+                    {/* Active Indicator on hover */}
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="w-1 h-8 bg-gradient-to-b from-transparent via-[#d4af37] to-transparent"></div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            )}
+          </div>
+          
+          {/* Hint for master menu */}
+          <div className="mt-6 pt-5 border-t border-[#ffffff10] text-center select-none pointer-events-none">
+            <p className="font-display text-[10px] tracking-widest uppercase text-[#555]">
+              Hold touch or Right-click here for System Menu
+            </p>
+          </div>
+          
         </div>
         
-        {/* Hint for master menu */}
-        <div className="mt-8 pt-6 border-t border-[#ffffff10] text-center select-none pointer-events-none">
-          <p className="font-display text-[10px] md:text-xs tracking-widest uppercase text-[#555]">
-            Hold touch or Right-click anywhere for System Menu
-          </p>
+        {/* Decorative Bottom Frame */}
+        <div className="w-full flex items-center justify-center mt-5 opacity-80 pointer-events-none select-none">
+          <div className="h-px bg-gradient-to-r from-transparent to-[#d4af37] w-1/4"></div>
+          <div className="w-3 h-3 border border-[#d4af37] rotate-45 mx-4"></div>
+          <div className="h-px bg-gradient-to-l from-transparent to-[#d4af37] w-1/4"></div>
         </div>
-        
-      </div>
-      
-      {/* Decorative Bottom Frame */}
-      <div className="w-full max-w-3xl flex items-center justify-center mt-6 opacity-80 pointer-events-none select-none">
-        <div className="h-px bg-gradient-to-r from-transparent to-[#d4af37] w-1/4"></div>
-        <div className="w-3 h-3 border border-[#d4af37] rotate-45 mx-4"></div>
-        <div className="h-px bg-gradient-to-l from-transparent to-[#d4af37] w-1/4"></div>
       </div>
 
       {/* Master Menu Overlay */}
