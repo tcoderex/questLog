@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckSquare, Trash2, Copy, Sword, XCircle, Info, Minus, X } from 'lucide-react';
+import { CheckSquare, Trash2, Copy, Sword, XCircle, Info, Minus, X, Wifi, WifiOff, RefreshCw, Globe } from 'lucide-react';
 
 interface Quest {
   id: string;
@@ -69,6 +69,84 @@ export default function App() {
   const [isExiting, setIsExiting] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isClosed, setIsClosed] = useState(false);
+
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+  const [checkingUpdate, setCheckingUpdate] = useState(false);
+  const [updateStatus, setUpdateStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  const handleCheckSWUpdate = async () => {
+    setCheckingUpdate(true);
+    setUpdateStatus('Sensing atmospheric changes... (polling service worker)');
+    
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+          setUpdateStatus('Checking remote repository on Vercel...');
+          await registration.update();
+          
+          if (registration.waiting) {
+            setUpdateStatus('An upgrade is waiting. Activating new runes shortly!');
+            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            setTimeout(() => {
+              setUpdateStatus('Your local runes match the latest Github code! You are fully upgraded.');
+              setCheckingUpdate(false);
+            }, 1500);
+          }
+        } else {
+          setTimeout(() => {
+            setUpdateStatus('Service worker is not registered yet. It will run automatically once the page is fully ready.');
+            setCheckingUpdate(false);
+          }, 1500);
+        }
+      } catch (err) {
+        setUpdateStatus('Failed to check automatically: ' + String(err));
+        setCheckingUpdate(false);
+      }
+    } else {
+      setTimeout(() => {
+        setUpdateStatus('Service Workers are not supported: Check if your browser is in secure contexts (HTTPS).');
+        setCheckingUpdate(false);
+      }, 1000);
+    }
+  };
+
+  const handleForceUpdateLocal = () => {
+    setCheckingUpdate(true);
+    setUpdateStatus('Clearing local cache registers and refreshing...');
+    
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const reg of registrations) {
+          reg.unregister();
+        }
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      });
+    } else {
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    }
+  };
 
   const handleCloseApp = () => {
     setIsExiting(true);
@@ -476,40 +554,118 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Credits Overlay */}
+      {/* Credits / Runes Synchronizer Overlay */}
       <AnimatePresence>
         {showCredits && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 overflow-y-auto"
             onClick={() => setShowCredits(false)}
           >
             <motion.div
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="bg-[#050505] border border-[#d4af37]/30 shadow-[0_0_50px_rgba(212,175,55,0.05)] p-8 max-w-md w-full relative flex flex-col items-center text-center"
+              className="bg-[#050505] border border-[#d4af37]/45 shadow-[0_0_60px_rgba(212,175,55,0.08)] p-6 md:p-8 max-w-lg w-full relative flex flex-col items-center text-center my-8"
               onClick={e => e.stopPropagation()}
             >
-              <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-[#d4af37] opacity-60"></div>
-              <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-[#d4af37] opacity-60"></div>
-              
-              <Sword size={40} className="text-[#d4af37] mb-6 drop-shadow-md" />
-              <h2 className="font-display text-2xl text-[#ececec] uppercase tracking-widest mb-2">A Masterwork</h2>
-              <Divider />
-              <p className="text-[#a1a1aa] font-serif italic text-xl my-6 leading-relaxed">
-                Forged in the fires of Google AI Studio. <br />
-                Crafted by <span className="text-[#d4af37] not-italic font-display uppercase tracking-wider text-sm ml-1">tcoderex (wasim dorboz)</span>
+              {/* Corner Ornaments */}
+              <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-[#d4af37] opacity-80"></div>
+              <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-[#d4af37] opacity-80"></div>
+              <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-[#d4af37] opacity-80"></div>
+              <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-[#d4af37] opacity-80"></div>
+
+              <Sword size={36} className="text-[#d4af37] mb-2 drop-shadow-md" />
+              <h2 className="font-display text-2xl text-[#ececec] uppercase tracking-widest mb-1">A Masterwork</h2>
+              <p className="text-[#a1a1aa] font-serif italic text-base leading-relaxed">
+                Forged in client-side runes of Google AI Studio.<br />
+                Crafted by <span className="text-[#d4af37] not-italic font-display uppercase tracking-wider text-xs ml-1">tcoderex (wasim dorboz)</span>
               </p>
               
-              <button
-                onClick={() => setShowCredits(false)}
-                className="mt-4 font-display uppercase tracking-widest text-sm text-[#ececec] hover:text-[#d4af37] transition-colors border border-transparent hover:border-[#d4af37]/40 px-8 py-3 bg-white/5 cursor-pointer"
-              >
-                Return
-              </button>
+              <Divider />
+
+              <div className="w-full space-y-4 my-2 text-[#ececec] text-left">
+                {/* Active Status Display and Description */}
+                <div className="border border-[#ffffff10] bg-white/[0.02] p-4 font-serif italic text-[#a1a1aa] text-sm space-y-2">
+                  <div className="flex items-center justify-between text-xs font-display not-italic tracking-wider uppercase text-[#d4af37]/80">
+                    <span>Atmospheric Connection</span>
+                    <span className={isOnline ? 'text-green-400 font-display flex items-center gap-1.5' : 'text-zinc-500 flex items-center gap-1.5'}>
+                      {isOnline ? <Wifi size={12} className="text-green-400" /> : <WifiOff size={12} className="text-zinc-500" />}
+                      {isOnline ? 'ONLINE' : 'OFFLINE'}
+                    </span>
+                  </div>
+                  <p className="text-xs leading-relaxed">
+                    {isOnline 
+                      ? 'The paths to Tamriel are active! Your local runes can synchronize with your branch on Vercel immediately.' 
+                      : 'The sky is thick with storm. Direct synchronization is not possible, but local objectives remain perfectly stored inside browser memories.'}
+                  </p>
+                </div>
+
+                <div className="space-y-1 text-center sm:text-left">
+                  <h3 className="font-display text-[10px] text-[#d4af37] tracking-widest uppercase">How to upgrade your log:</h3>
+                  <p className="font-sans text-xs text-[#a1a1aa] leading-relaxed">
+                    Pushing code to your GitHub triggers a fresh build on Vercel. Click <strong className="text-[#ececec]">Upgrade Runes</strong> below to instantly pull the latest spells!
+                  </p>
+                </div>
+
+                {updateStatus && (
+                  <div className="border border-[#d4af37]/30 bg-[#d4af37]/5 px-4 py-2.5 text-xs font-mono text-center select-text selection:bg-[#d4af37]/40 text-[#ececec]">
+                    {updateStatus}
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="w-full mt-4 flex flex-col gap-2.5">
+                <button
+                  onClick={handleCheckSWUpdate}
+                  disabled={checkingUpdate || !isOnline}
+                  className={`w-full font-display uppercase tracking-widest text-xs py-3.5 px-4 border text-center transition-all flex items-center justify-center gap-2 ${
+                    checkingUpdate
+                      ? 'border-[#444] text-[#666] cursor-not-allowed'
+                      : !isOnline
+                        ? 'border-[#333] text-[#555] cursor-not-allowed opacity-50'
+                        : 'border-[#d4af37] bg-[#d4af37]/10 hover:bg-[#d4af37]/20 text-[#d4af37] hover:border-[#ececec] hover:text-[#ececec] cursor-pointer skyrim-glow'
+                  }`}
+                >
+                  <RefreshCw size={12} className={checkingUpdate ? 'animate-spin' : isOnline ? 'animate-spin [animation-duration:8s]' : ''} />
+                  <span>{checkingUpdate ? 'Sensing Elements...' : isOnline ? 'Upgrade Runes (Glows!)' : 'Offline Mode (Working Local)'}</span>
+                </button>
+
+                <div className="flex w-full gap-2.5">
+                  <button
+                    onClick={handleForceUpdateLocal}
+                    disabled={checkingUpdate}
+                    className="flex-1 font-display uppercase tracking-widest text-[10px] py-2.5 px-3 border border-[#444] hover:bg-red-950/20 hover:border-red-500/50 hover:text-red-400 text-[#a1a1aa] text-center cursor-pointer transition-all"
+                  >
+                    Force Clear Caches
+                  </button>
+
+                  <button
+                    onClick={() => setShowCredits(false)}
+                    className="flex-1 font-display uppercase tracking-widest text-[10px] py-2.5 px-3 border border-transparent hover:border-white/20 text-[#ececec] hover:text-[#d4af37] bg-white/5 text-center cursor-pointer transition-colors"
+                  >
+                    Return
+                  </button>
+                </div>
+              </div>
+
+              {/* Secure public address links if online */}
+              {isOnline && (
+                <div className="w-full mt-4 pt-3 border-t border-[#ffffff10] flex items-center justify-between text-[10px] text-[#555] font-display uppercase tracking-wider">
+                  <span>Deployment Link:</span>
+                  <a 
+                    href="https://quest-log-red.vercel.app" 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="text-[#d4af37] hover:underline flex items-center gap-1 normal-case font-serif italic text-xs"
+                  >
+                    <Globe size={10} className="not-italic" /> quest-log-red.vercel.app
+                  </a>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}

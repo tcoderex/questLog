@@ -1,0 +1,22 @@
+{
+  "name": "Skyrim Quest Log",
+  "short_name": "Quest Log",
+  "description": "Scribe your objectives, then export the runes with PWA capability.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050505",
+  "theme_color": "#d4af37",
+  "icons": [
+    {
+      "src": "/app_logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/qq.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}

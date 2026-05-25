@@ -8,3 +8,16 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 );
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((reg) => {
+        console.log('Quest Log Service Worker active:', reg.scope);
+      })
+      .catch((err) => {
+        console.warn('Quest Log Service Worker failed to register:', err);
+      });
+  });
+}
+
