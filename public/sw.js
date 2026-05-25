@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quest-log-cache-v1';
+const CACHE_NAME = 'quest-log-cache-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -8,22 +8,30 @@ const ASSETS_TO_CACHE = [
   '/manifest.json'
 ];
 
-// Install event - Cache main files
+// Install event - Cache core shell files immediately
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      // Use to handle individual cache failure gracefully so SW installs successfully
+      return Promise.allSettled(
+        ASSETS_TO_CACHE.map(asset => {
+          return cache.add(asset).catch(err => {
+            console.warn(`Failed to pre-cache asset: ${asset}`, err);
+          });
+        })
+      );
     }).then(() => self.skipWaiting())
   );
 });
 
-// Activate event - Clean old caches
+// Activate event - Clean old caches instantly when activated
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
+            console.log('Clearing old rune cache:', cache);
             return caches.delete(cache);
           }
         })
@@ -32,57 +40,51 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - Stale-While-Revalidate strategy
+// Fetch event - Cache-First & Stale-While-Revalidate fallback strategy
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-
-  // Skip dev endpoints or non-HTTP protocols
   if (!event.request.url.startsWith('http')) return;
 
   const url = new URL(event.request.url);
 
-  // Handle SPA routing: serve index.html if request is navigation
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      caches.match('/index.html').then((cachedIndex) => {
-        return fetch(event.request)
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      // 1. If we have the item in cache, return it immediately (very fast, offline friendly)
+      if (cachedResponse) {
+        // Fetch in background to update cache for next load
+        fetch(event.request)
           .then((networkResponse) => {
-            if (networkResponse.status === 200) {
+            if (networkResponse && networkResponse.status === 200) {
               caches.open(CACHE_NAME).then((cache) => {
-                cache.put('/index.html', networkResponse.clone());
+                cache.put(event.request, networkResponse);
               });
             }
-            return networkResponse;
           })
-          .catch(() => cachedIndex);
-      })
-    );
-    return;
-  }
+          .catch(() => {
+            // Silently swallow errors when offline in background fetch
+          });
+        return cachedResponse;
+      }
 
-  // Same-origin dynamic cache update
-  if (url.origin === self.location.origin) {
-    event.respondWith(
-      caches.open(CACHE_NAME).then((cache) => {
-        return cache.match(event.request).then((cachedResponse) => {
-          const fetchedResponse = fetch(event.request)
-            .then((networkResponse) => {
-              if (networkResponse.status === 200) {
-                cache.put(event.request, networkResponse.clone());
-              }
-              return networkResponse;
-            })
-            .catch(() => {
-              // Ignore network errors when offline
-              return null;
+      // 2. If not stored in cache, fetch it from the network
+      return fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
             });
-
-          return cachedResponse || fetchedResponse;
+          }
+          return networkResponse;
+        })
+        .catch((err) => {
+          // 3. Physical Offline Fallback for SPA routing and navigation
+          if (event.request.mode === 'navigate') {
+            return caches.match('/index.html') || caches.match('/');
+          }
+          // Propagate real fetch network failure instead of returning null
+          throw err;
         });
-      })
-    );
-  } else {
-    // Other assets (external)
-    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
-  }
+    })
+  );
 });

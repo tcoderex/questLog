@@ -4,6 +4,11 @@
   "description": "Scribe your objectives, then export the runes with PWA capability.",
   "start_url": "/",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
   "background_color": "#050505",
   "theme_color": "#d4af37",
