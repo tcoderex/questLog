@@ -16,3 +16,31 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+
+/* Custom Scrollbar inspired by Skyrim UI */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d4af37 rgba(0, 0, 0, 0.45);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.45);
+  border-left: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 0px;
+  box-shadow: 0 0 4px rgba(212, 175, 55, 0.6);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #ececec;
+  box-shadow: 0 0 6px rgba(236, 236, 236, 0.9);
+}
+

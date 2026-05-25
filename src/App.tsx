@@ -63,6 +63,7 @@ export default function App() {
   
   const [inputValue, setInputValue] = useState('');
   const [copied, setCopied] = useState(false);
+  const [copiedQuestId, setCopiedQuestId] = useState<string | null>(null);
   const [showCredits, setShowCredits] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   
@@ -169,6 +170,15 @@ export default function App() {
   const removeQuest = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setQuests(quests.filter(q => q.id !== id));
+  };
+
+  const handleCopyQuest = (quest: Quest, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const rune = `[${quest.completed ? 'x' : ' '}] ${quest.text}`;
+    navigator.clipboard.writeText(rune).then(() => {
+      setCopiedQuestId(quest.id);
+      setTimeout(() => setCopiedQuestId(null), 1500);
+    });
   };
 
   const handleCopy = () => {
@@ -280,12 +290,25 @@ export default function App() {
                       {quest.text}
                     </span>
 
-                    <button
-                      onClick={(e) => removeQuest(quest.id, e)}
-                      className="opacity-40 hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 text-[#666] hover:text-red-400 font-display text-[10px] md:text-xs px-2 py-1 tracking-widest transition-opacity"
-                    >
-                      Drop
-                    </button>
+                    <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+                      <button
+                        onClick={(e) => handleCopyQuest(quest, e)}
+                        className={`font-display text-[10px] md:text-xs px-2 py-1 tracking-widest transition-all duration-150 ${
+                          copiedQuestId === quest.id 
+                            ? 'text-[#d4af37] opacity-100 font-medium' 
+                            : 'opacity-40 hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 text-[#666] hover:text-[#d4af37]'
+                        }`}
+                      >
+                        {copiedQuestId === quest.id ? 'Scribed' : 'Copy'}
+                      </button>
+
+                      <button
+                        onClick={(e) => removeQuest(quest.id, e)}
+                        className="opacity-40 hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 text-[#666] hover:text-red-400 font-display text-[10px] md:text-xs px-2 py-1 tracking-widest transition-opacity"
+                      >
+                        Drop
+                      </button>
+                    </div>
                     
                     {/* Active Indicator on hover */}
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
