@@ -1,0 +1,6 @@
+{
+  "name": "Markdown Todo Exporter",
+  "description": "Rapidly enter tasks and export them as markdown checkboxes for AI assistants.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
